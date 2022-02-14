@@ -34,15 +34,67 @@ If the registry enablement is successful, you will see two new pods in the kube-
 |registry-proxy-q85k4|1/1| Running|    0|    8m|
 
 ## 4 Install Istio
+U
+We need to install an ingress gateway in order to route requests to the Knative Serving Services like Istio. Follow the hereunder steps to install Istio:
 
-We need to install an ingress gateway in order to route requests to the Knative Serving Services. In this tutorial we will use a minimal Istio (istio lean) installation since the ingress gateway is the only Istio component required for Knative. Use the followig script to install Istio
+Download the latest release 
+
 ```sh
- $MyScripts/install-istio.sh
+curl -L https://istio.io/downloadIstio | sh -
 ```
 
+Move to the downloaded folder and add istioctl to your PATH.
 
-## 3 Install Knative
+```sh
+cd <directory>
+export PATH=$PWD/bin:$PATH
+```
 
->`kubectl apply \
+Install the demo profile
+
+```sh
+istioctl manifest apply --set profile=demo
+```
+
+To check if Istio  pods are running execute the following command
+
+```sh
+kubectl get pods -n istio-system
+```
+|NAME                                   |READY   |STATUS    |RESTARTS   |AGE|
+|:--------------------------------------|:------:|:--------:|:---------:|:-:|
+|istio-egressgateway-599c8845c9-6t8mr   |1/1     |Running   |0          |19m|
+|istio-ingressgateway-69dc56d7f-n5tct   |1/1     |Running   |0          |19m|
+|istiod-8c75fcbc9-7qm6j                 |1/1     |Running   |0          |20m|
+
+
+## 5 Install Knative
+
+The Knative installation process is divided into three steps:
+ 1. Installing Knative Custom Resource Definitions (CRDs)
+ 2. Installing the Knative Serving components
+ 3. Installing the Knative Eventing components
+
+### Install Knative CRDs
+
+Knative Serving and Eventing define their own Kubernetes CRDs. We need to have the Knative Serving and Eventing CRDs installed in your Kubernetes cluster. Run the following command to do so:
+
+```sh
+kubectl apply \
   --filename https://github.com/knative/serving/releases/download/knative-v1.1.0/serving-crds.yaml \
-  --filename https://github.com/knative/eventing/releases/download/knative-v1.1.0/eventing-crds.yaml`
+  --filename https://github.com/knative/eventing/releases/download/knative-v1.1.0/eventing-crds.yaml
+```
+
+To verify that all CRDs were created we can query the API group called serving.knative.dev
+
+```sh
+kubectl api-resources --api-group='serving.knative.dev'
+```
+
+|NAME             |SHORTNAMES      |APIGROUP              |NAMESPACED   |KIND|
+|:----------------|:--------------:|:--------------------:|:-----------:|:--:|
+|configurations   |config,cfg      |serving.knative.dev   |true         |Configuration|
+|domainmappings   |dm              |serving.knative.dev   |true         |DomainMapping|
+|revisions        |rev             |serving.knative.dev   |true         |Revision|
+|routes           |rt              |serving.knative.dev   |true         |Route|
+|services         |kservice,ksvc   |serving.knative.dev   |true         |Service|
