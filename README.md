@@ -158,23 +158,6 @@ kubectl get pods --all-namespaces -l 'app in(3scale-kourier-gateway,3scale-kouri
 |:-----------------|:----------------------------------------:|:------:|:--------:|:---------:|:-:|
 |kourier-system    |3scale-kourier-gateway-bf9cb68c8-g5m74   |1/1     |Running   |1          |3h|
 
-Install the demo profile
-
-```sh
-istioctl manifest apply --set profile=demo
-```
-
-To check if Istio  pods are running execute the following command
-
-```sh
-kubectl get pods -n istio-system
-```
-|NAME                                   |READY   |STATUS    |RESTARTS   |AGE|
-|:--------------------------------------|:------:|:--------:|:---------:|:-:|
-|istio-egressgateway-599c8845c9-6t8mr   |1/1     |Running   |0          |19m|
-|istio-ingressgateway-69dc56d7f-n5tct   |1/1     |Running   |0          |19m|
-|istiod-8c75fcbc9-7qm6j                 |1/1     |Running   |0          |20m|
-
 Now configure Knative serving to use Kourier as the ingress:
 
 ```sh
